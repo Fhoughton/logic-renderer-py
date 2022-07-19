@@ -104,13 +104,20 @@ def make_full_adder(in_a, in_b, in_c, out_sum, out_carry, minify=False, trace=Fa
         ident = create_gate_3_2(full_name, in_a, in_b, in_c, out_sum, out_carry)
         return {'carry': ident, 'sum': ident}
 
-# expects array of in_a and in_b for each 2 bits, array of out_carry for each 2 bits and 
-def make_n_bit_adder(bit_count, in_a, in_b, out_sum, out_carry):
+# expects array of in_a and in_b for each 2 bits, array of out_sum for each 2 bits and 
+def make_n_bit_adder(bit_count, in_a, in_b, out_sum, initial_carry, final_carry):
     out = []
 
-    last_carry = make_input("1")
+    bit_count = int(bit_count / 2)
+
+    # Previous carry from last two bits added
+    last_carry = initial_carry
+
     for i in range(bit_count):
-        adder = make_full_adder(in_a[i], in_b[i], last_carry, out_sum[i], out_carry[i])
+        if i == bit_count - 1:
+            adder = make_full_adder(in_a[i], in_b[i], last_carry, out_sum[i], final_carry)
+        else:
+            adder = make_full_adder(in_a[i], in_b[i], last_carry, out_sum[i], None)
         out.append(adder)
         last_carry = adder['carry']
 
@@ -119,11 +126,19 @@ def make_n_bit_adder(bit_count, in_a, in_b, out_sum, out_carry):
 def create_graph_contents():
     in_a = make_input('a')
     in_b = make_input('b')
-    in_c = make_input('c')
+    in_a2 = make_input('a2')
+    in_b2 = make_input('b2')
+    in_a3 = make_input('a3')
+    in_b3 = make_input('b3')
     out_sum = make_output('sum')
-    out_carry = make_output('carry')
+    out_sum2 = make_output('sum2')
+    out_sum3 = make_output('sum3')
+    out_final_carry = make_output('final_carry')
 
-    make_full_adder(in_a, in_b, in_c, out_sum, out_carry, False)
+    initial_carry = make_input("1")
+
+    #make_n_bit_adder(6, [in_a, in_a2, in_a3], [in_b, in_b2, in_b3], [out_sum, out_sum2, out_sum3], initial_carry, out_final_carry)
+    make_n_bit_adder(4, [in_a, in_a2], [in_b, in_b2], [out_sum, out_sum2], initial_carry, out_final_carry)
 
 main_graph = graphviz.Digraph(engine='dot')
 g = main_graph

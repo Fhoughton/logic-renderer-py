@@ -1,24 +1,46 @@
 digraph {
 	0 [label=a shape=doublecircle]
 	1 [label=b shape=doublecircle]
-	2 [label=c shape=doublecircle]
-	3 [label=sum shape=doubleoctagon]
-	4 [label=carry shape=doubleoctagon]
-	5 [label="XOR " shape=rectangle]
-	0 -> 5
-	1 -> 5
-	6 [label="AND " shape=rectangle]
-	0 -> 6
-	1 -> 6
-	7 [label="XOR " shape=rectangle]
-	5 -> 7
-	2 -> 7
-	7 -> 3
-	8 [label="AND " shape=rectangle]
-	5 -> 8
-	2 -> 8
-	9 [label="OR " shape=rectangle]
-	6 -> 9
-	8 -> 9
-	9 -> 4
+	2 [label=a2 shape=doublecircle]
+	3 [label=b2 shape=doublecircle]
+	4 [label=a3 shape=doublecircle]
+	5 [label=b3 shape=doublecircle]
+	6 [label=sum shape=doubleoctagon]
+	7 [label=sum2 shape=doubleoctagon]
+	8 [label=sum3 shape=doubleoctagon]
+	9 [label=final_carry shape=doubleoctagon]
+	10 [label=1 shape=doublecircle]
+	11 [label="XOR " shape=rectangle]
+	0 -> 11
+	1 -> 11
+	12 [label="AND " shape=rectangle]
+	0 -> 12
+	1 -> 12
+	13 [label="XOR " shape=rectangle]
+	11 -> 13
+	10 -> 13
+	13 -> 6
+	14 [label="AND " shape=rectangle]
+	11 -> 14
+	10 -> 14
+	15 [label="OR " shape=rectangle]
+	12 -> 15
+	14 -> 15
+	16 [label="XOR " shape=rectangle]
+	2 -> 16
+	3 -> 16
+	17 [label="AND " shape=rectangle]
+	2 -> 17
+	3 -> 17
+	18 [label="XOR " shape=rectangle]
+	16 -> 18
+	15 -> 18
+	18 -> 7
+	19 [label="AND " shape=rectangle]
+	16 -> 19
+	15 -> 19
+	20 [label="OR " shape=rectangle]
+	17 -> 20
+	19 -> 20
+	20 -> 9
 }

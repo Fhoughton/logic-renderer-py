@@ -104,6 +104,18 @@ def make_full_adder(in_a, in_b, in_c, out_sum, out_carry, minify=False, trace=Fa
         ident = create_gate_3_2(full_name, in_a, in_b, in_c, out_sum, out_carry)
         return {'carry': ident, 'sum': ident}
 
+# expects array of in_a and in_b for each 2 bits, array of out_carry for each 2 bits and 
+def make_n_bit_adder(bit_count, in_a, in_b, out_sum, out_carry):
+    out = []
+
+    last_carry = make_input("1")
+    for i in range(bit_count):
+        adder = make_full_adder(in_a[i], in_b[i], last_carry, out_sum[i], out_carry[i])
+        out.append(adder)
+        last_carry = adder['carry']
+
+    return out
+
 def create_graph_contents():
     in_a = make_input('a')
     in_b = make_input('b')

@@ -64,6 +64,9 @@ def make_and(name, a, b, out):
 def make_xor(name, a, b, out):
     return create_gate_2_1(f"XOR {bracket(name)}", a, b, out)
 
+def make_or(name, a, b, out):
+    return create_gate_2_1(f"OR {bracket(name)}", a, b, out)
+
 def make_input(name):
     global g, node_count
     ident = str(node_count)
@@ -78,48 +81,37 @@ def make_output(name):
     node_count += 1
     return ident
 
-half_adder_count = 0
-
-def make_half_adder(in_a, in_b, out_h, out_l, minify=False, trace=False):
-    global g, node_count, main_graph, half_adder_count
-    name = "HALF-ADDER_" + str(half_adder_count)
-    half_adder_count += 1
-
-    if not minify:
-        if trace:
-            h_last = make_and(name + " [h]", in_a, in_b, out_h)
-            l_last = make_xor(name + " [l]", in_a, in_b, out_l)
-        else:
-            h_last = make_and(None, in_a, in_b, out_h)
-            l_last = make_xor(None, in_a, in_b, out_l)
-        return {'h': h_last, 'l': l_last}
-    else:
-        ident = create_gate_2_2(name, in_a, in_b, out_h, out_l)
-        return {'h': ident, 'l': ident}
-
 full_adder_count = 0
 
-def make_full_adder(in_a, in_b, in_c, out_h, out_l, minify=False):
+def make_full_adder(in_a, in_b, in_c, out_sum, out_carry, minify=False, trace=False):
     global full_adder_count
-    name = "FULL-ADDER_" + str(full_adder_count)
+
+    full_name = "FULL-ADDER_" + str(full_adder_count)
+
+    if trace:
+        name = full_name
+    else:
+        name = None
     full_adder_count += 1
     if not minify:
-        hadd1 = make_half_adder(in_a, in_b, None, None)
-        hadd2 = make_half_adder(hadd1['l'], in_c, None, out_l)
-        hadd3 = make_half_adder(hadd1['h'], hadd2['h'], None, out_h)
-        return hadd3
+        xor_1 = make_xor(name, in_a, in_b, None)
+        and_1 = make_and(name, in_a, in_b, None)
+        xor_sum = make_xor(name, xor_1, in_c, out_sum)
+        and_2 = make_and(name, xor_1, in_c, None)
+        or_carry = make_or(name, and_1, and_2, out_carry)
+        return {'sum': xor_sum, 'carry': or_carry}
     else:
-        ident = create_gate_3_2(name, in_a, in_b, in_c, out_h, out_l)
-        return {'h': ident, 'l': ident}
+        ident = create_gate_3_2(full_name, in_a, in_b, in_c, out_sum, out_carry)
+        return {'carry': ident, 'sum': ident}
 
 def create_graph_contents():
     in_a = make_input('a')
     in_b = make_input('b')
     in_c = make_input('c')
-    out_h = make_output('h')
-    out_l = make_output('l')
+    out_sum = make_output('sum')
+    out_carry = make_output('carry')
 
-    make_full_adder(in_a, in_b, in_c, out_h, out_l, False)
+    make_full_adder(in_a, in_b, in_c, out_sum, out_carry, False)
 
 main_graph = graphviz.Digraph(engine='dot')
 g = main_graph
